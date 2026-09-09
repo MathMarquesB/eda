@@ -1,0 +1,153 @@
+# Setup de Ambiente C++ (Ubuntu 26)
+
+Este repositório está configurado para utilizar as ferramentas mais modernas de desenvolvimento em C++ no Ubuntu 26. O ambiente utiliza o **Clang-22** como compilador, **Ninja** como sistema de build e **CMake 4.0** para o gerenciamento do projeto.
+
+## Preparação de Ambiente
+
+Siga os passos abaixo para preparar o seu sistema Ubuntu 26.
+
+### 1. Instalar o Clang-22 e Ferramentas Essenciais
+
+O Ubuntu 26 já possui o Clang-22 em seus repositórios padrão. Execute no terminal:
+
+```bash
+sudo apt update
+sudo apt install -y build-essential ninja-build gpg wget
+sudo apt install -y clang-22 lldb-22 lld-22 libc++-22-dev libc++abi-22-dev
+
+```
+
+### 2. Instalar o CMake 4.0
+
+Para garantir que você possui a versão 4.0 ou superior do CMake, adicione o repositório oficial da Kitware:
+
+```bash
+# Adicionar a chave GPG do repositório
+wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+
+# Adicionar o repositório às fontes do sistema
+echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ noble main" | sudo tee /etc/apt/sources.list.d/kitware.list
+
+# Atualizar e instalar
+sudo apt update
+sudo apt install -y cmake
+
+```
+
+### 3. Configurar Atalhos do Compilador
+
+Defina o Clang-22 como o compilador padrão do sistema:
+
+```bash
+sudo update-alternatives --install /usr/bin/clang clang /usr/bin/clang-22 100
+sudo update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-22 100
+
+```
+
+---
+
+## Dicas de Uso
+
+Para automatizar e padronizar a compilação, este projeto utiliza o arquivo `CMakePresets.json`. Abaixo estão as definições base de configuração do projeto.
+
+### Arquivos de Configuração
+
+**1. `CMakeLists.txt`**
+Este arquivo define o projeto, exige o CMake 4.0 e configura o uso do padrão C++23.
+
+```cmake
+cmake_minimum_required(VERSION 4.0)
+project(MeuProjeto CXX)
+
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_executable(app main.cpp)
+
+```
+
+**2. `CMakePresets.json`**
+Este arquivo configura automaticamente o gerador Ninja, o compilador Clang-22 e separa os diretórios de build (`debug` e `release`).
+
+```json
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 4,
+    "minor": 0,
+    "patch": 0
+  },
+  "configurePresets": [
+    {
+      "name": "default",
+      "displayName": "Clang 22 + Ninja (Debug)",
+      "description": "Configuração padrão para desenvolvimento em C++ usando Clang-22 e Ninja",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/debug",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_C_COMPILER": "clang-22",
+        "CMAKE_CXX_COMPILER": "clang++-22",
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "Clang 22 + Ninja (Release)",
+      "description": "Configuração para compilação otimizada",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/release",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_C_COMPILER": "clang-22",
+        "CMAKE_CXX_COMPILER": "clang++-22"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "default"
+    },
+    {
+      "name": "release",
+      "configurePreset": "release"
+    }
+  ]
+}
+
+```
+
+### Comandos de Build (Presets)
+
+Com os arquivos configurados, você não precisa mais passar argumentos longos no terminal.
+
+* **Para gerar os arquivos de build (Configure):**
+```bash
+cmake --preset default
+
+```
+
+
+*(Isso criará a pasta `build/debug/` e o arquivo `compile_commands.json` para uso no VS Code/CLion).*
+* **Para compilar o projeto (Build):**
+```bash
+cmake --build --preset debug
+
+```
+
+
+* **Para executar a aplicação:**
+```bash
+./build/debug/app
+
+```
+
+
+* **Para compilar em modo Release (Otimizado para Produção):**
+```bash
+cmake --preset release
+cmake --build --preset release
+./build/release/app
+
+```
