@@ -16,6 +16,7 @@
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_C_COMPILER": "clang-22",
         "CMAKE_CXX_COMPILER": "clang++-22",
+        "CMAKE_CXX_FLAGS": "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/15",
         "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
       }
     },
@@ -28,7 +29,8 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_C_COMPILER": "clang-22",
-        "CMAKE_CXX_COMPILER": "clang++-22"
+        "CMAKE_CXX_COMPILER": "clang++-22",
+        "CMAKE_CXX_FLAGS": "--gcc-install-dir=/usr/lib/gcc/x86_64-linux-gnu/15"
       }
     }
   ],

@@ -132,7 +132,7 @@ cmake --preset default
 *(Isso criará a pasta `build/debug/` e o arquivo `compile_commands.json` para uso no VS Code/CLion).*
 * **Para compilar o projeto (Build):**
 ```bash
-cmake --build --preset debug
+cmake --build build/debug --verbose
 
 ```
 
