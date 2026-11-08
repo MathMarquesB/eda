@@ -13,6 +13,7 @@ struct ArvBin {
     void cria();
     bool estritaBin(NoBin *no);
     bool ehPerfeita(NoBin *no);
+    bool ehCompleta(NoBin *no);
 };
 
 void ArvBin::cria() {
@@ -94,13 +95,28 @@ bool ArvBin::ehPerfeita(NoBin *no) {
         return true;
     if (!dois_ou_zero_filhos(no))
         return false;
-    NoBin *tmp = no;
-    int nivel = 1;
-    while (tmp->esq) {
-        nivel++;
-        tmp = tmp->esq;
-    }
-    return auxEhPerfeita(no, nivel, 1, true);
+    return auxEhPerfeita(no, altura(no), 1, true);
+}
+
+// Ex 1d
+bool ehSemiFolha(NoBin *no) {
+    return (!(no->esq || no->dir) || ((!no->esq && no->dir) || (no->esq && !no->dir)));
+}
+
+bool auxEhCompleta(NoBin *no, int nivel_ref, int nivel_atual, bool check) {
+    if (ehSemiFolha(no))
+        check *= (nivel_atual == nivel_ref || nivel_atual + 1 == nivel_ref);
+    if (check && no->esq)
+        check *= auxEhCompleta(no->esq, nivel_ref, nivel_atual + 1, check);
+    if (check && no->dir)
+        check *= auxEhCompleta(no->dir, nivel_ref, nivel_atual + 1, check);
+    return check;
+}
+
+bool ArvBin::ehCompleta(NoBin *no) {
+    if (!no)
+        return true;
+    return auxEhCompleta(no, altura(no), 1, true);
 }
 
 // Operações básicas
@@ -166,6 +182,13 @@ int main() {
         std::println("\nA arvore é perfeita.");
     else
         std::println("\nA arvore não é perfeita.");
+
+    // Ex 1d
+    // ehCompleta
+    if (arv.ehCompleta(arv.raiz))
+        std::println("\nA arvore é completa.");
+    else
+        std::println("\nA arvore não é completa.");
 
     return 0;
 }
