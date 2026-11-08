@@ -7,37 +7,215 @@ struct NoBin {
 };
 
 struct ArvBin {
-    NoBin raiz;
+    NoBin *raiz;
     int N;
 
     void cria();
-}
+    bool estritaBin(NoBin *no);
+    bool ehPerfeita(NoBin *no);
+    bool ehCompleta(NoBin *no);
+};
 
 void ArvBin::cria() {
     raiz = nullptr;
     N = 0;
 }
 
+// Ex 1a
+bool dois_ou_zero_filhos(NoBin *no) {
+    return (!(no->esq || no->dir) || (no->esq && no->dir));
+}
+
+bool auxEstritaBin(NoBin *no, bool check) {
+    if (no && no->esq)
+        check *= auxEstritaBin(no->esq, check);
+    if (no && no->dir)
+        check *= auxEstritaBin(no->dir, check);
+    return check * dois_ou_zero_filhos(no);
+}
+
+bool ArvBin::estritaBin(NoBin *no) {
+    if (!no)
+        return true;
+    return auxEstritaBin(no, true);
+}
+
+// Ex 1e
+int max(int he, int hd) {
+    if (he > hd)
+        return he;
+    return hd;
+}
+
+int altura(NoBin *no) {
+    if (!no)
+        return 0;
+    int he = 0;
+    int hd = 0;
+    if (no->esq)
+        he += altura(no->esq);
+    if (no->dir)
+        hd += altura(no->dir);
+    return max(he, hd) + 1;
+}
+
+// Ex 1b
+void auxEmNiveis(NoBin *no, int altura_atual, int altura_relativa) {
+    if (altura_relativa == altura_atual)
+        std::println("{}", no->chave);
+    if (altura_relativa > altura_atual) {
+        if (no->esq)
+            auxEmNiveis(no->esq, altura_atual, altura_relativa - 1);
+        if (no->dir)
+            auxEmNiveis(no->dir, altura_atual, altura_relativa - 1);
+    }
+}
+
+void emNiveis(NoBin *no) {
+    if (!no)
+        return;
+    int altura_total = altura(no);
+    int altura_atual = altura_total;
+    int nivel = 1;
+    while (altura_atual) {
+        std::println("Nivel {}:", nivel);
+        auxEmNiveis(no, altura_atual, altura_total);
+        altura_atual--;
+        nivel++;
+    }
+}
+
+// Ex 1c
+bool auxEhPerfeita(NoBin *no, int nivel_ref, int nivel_atual, bool check) {
+    if (!dois_ou_zero_filhos(no))
+        return false;
+    if (check && no->esq)
+        check *= auxEhPerfeita(no->esq, nivel_ref, nivel_atual + 1, check);
+    if (check && no->dir)
+        check *= auxEhPerfeita(no->dir, nivel_ref, nivel_atual + 1, check);
+    if (no->esq && no->dir)
+        return check;
+    return check * nivel_ref == nivel_atual;
+}
+
+bool ArvBin::ehPerfeita(NoBin *no) {
+    if (!no)
+        return true;
+    if (!dois_ou_zero_filhos(no))
+        return false;
+    return auxEhPerfeita(no, altura(no), 1, true);
+}
+
+// Ex 1d
+bool ehSemiFolha(NoBin *no) {
+    return (!(no->esq || no->dir) || ((!no->esq && no->dir) || (no->esq && !no->dir)));
+}
+
+bool auxEhCompleta(NoBin *no, int nivel_ref, int nivel_atual, bool check) {
+    if (ehSemiFolha(no))
+        check *= (nivel_atual == nivel_ref || nivel_atual + 1 == nivel_ref);
+    if (check && no->esq)
+        check *= auxEhCompleta(no->esq, nivel_ref, nivel_atual + 1, check);
+    if (check && no->dir)
+        check *= auxEhCompleta(no->dir, nivel_ref, nivel_atual + 1, check);
+    return check;
+}
+
+bool ArvBin::ehCompleta(NoBin *no) {
+    if (!no)
+        return true;
+    return auxEhCompleta(no, altura(no), 1, true);
+}
+
+// Ex 1f
+void preOrdem(NoBin *no) {
+    if (no) {
+        std::println("{}", no->chave);
+        preOrdem(no->esq);
+        preOrdem(no->dir);
+    }
+}
+
+// Ex 1g
+void emOrdem(NoBin *no) {
+    if (no) {
+        emOrdem(no->esq);
+        std::println("{}", no->chave);
+        emOrdem(no->dir);
+    }
+}
+
+// Ex 1h
+void posOrdem(NoBin *no) {
+    if (no) {
+        posOrdem(no->esq);
+        posOrdem(no->dir);
+        std::println("{}", no->chave);
+    }
+}
+
+// Criação da árvore
 void insere(ArvBin *arv, NoBin *&raiz, char c) {
     if (!raiz) {
         raiz = new NoBin{c, nullptr, nullptr};
         arv->N++;
         return;
     }
-    if (c <= arv->chave)
-        return insere(arv, arv->esq, c);
-    return insere(arv, arv->dir, c);
+    if (c <= raiz->chave)
+        return insere(arv, raiz->esq, c);
+    return insere(arv, raiz->dir, c);
 }
 
 int main() {
     ArvBin arv;
     arv.cria();
 
-    insere(&arv, arv.raiz, 'A');
-    insere(&arv, arv.raiz, 'B');
-    insere(&arv, arv.raiz, 'C');
+    // Cria árvore perfeita
+    // insere(&arv, arv.raiz, 'D');
+    // insere(&arv, arv.raiz, 'B');
+    // insere(&arv, arv.raiz, 'A');
+    // insere(&arv, arv.raiz, 'C');
+    // insere(&arv, arv.raiz, 'F');
+    // insere(&arv, arv.raiz, 'E');
+    // insere(&arv, arv.raiz, 'G');
+
     insere(&arv, arv.raiz, 'D');
+    insere(&arv, arv.raiz, 'B');
+    insere(&arv, arv.raiz, 'A');
+    insere(&arv, arv.raiz, 'C');
+    insere(&arv, arv.raiz, 'F');
     insere(&arv, arv.raiz, 'E');
+    insere(&arv, arv.raiz, 'G');
+    insere(&arv, arv.raiz, 'X');
+    insere(&arv, arv.raiz, 'Y');
+    insere(&arv, arv.raiz, 'Z');
+
+    std::println("Percurso da arvore em-ordem:");
+    emOrdem(arv.raiz);
+
+    // Ex 1a
+    if (arv.estritaBin(arv.raiz))
+        std::println("\nA arvore é estritamente binaria.");
+    else
+        std::println("\nA arvore não é estritamente binaria.");
+
+    // Ex 1b
+    std::println("\nPercurso na arvore em-niveis:");
+    emNiveis(arv.raiz);
+
+    // Ex 1c
+    // ehPerfeita
+    if (arv.ehPerfeita(arv.raiz))
+        std::println("\nA arvore é perfeita.");
+    else
+        std::println("\nA arvore não é perfeita.");
+
+    // Ex 1d
+    // ehCompleta
+    if (arv.ehCompleta(arv.raiz))
+        std::println("\nA arvore é completa.");
+    else
+        std::println("\nA arvore não é completa.");
 
     return 0;
 }
