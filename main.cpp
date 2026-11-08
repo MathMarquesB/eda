@@ -40,18 +40,26 @@ bool ArvBin::estritaBin(NoBin *no) {
     return auxEstritaBin(no, true);
 }
 
-// Ex 1b
+// Ex 1e
+int max(int he, int hd) {
+    if (he > hd)
+        return he;
+    return hd;
+}
+
 int altura(NoBin *no) {
     if (!no)
         return 0;
-    int he = altura(no->esq);
-    int hd = altura(no->dir);
-    if (he > hd)
-        return he + 1;
-    else
-        return hd + 1;
+    int he = 0;
+    int hd = 0;
+    if (no->esq)
+        he += altura(no->esq);
+    if (no->dir)
+        hd += altura(no->dir);
+    return max(he, hd) + 1;
 }
 
+// Ex 1b
 void auxEmNiveis(NoBin *no, int altura_atual, int altura_relativa) {
     if (altura_relativa == altura_atual)
         std::println("{}", no->chave);
