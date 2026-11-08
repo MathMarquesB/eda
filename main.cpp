@@ -127,7 +127,34 @@ bool ArvBin::ehCompleta(NoBin *no) {
     return auxEhCompleta(no, altura(no), 1, true);
 }
 
-// Operações básicas
+// Ex 1f
+void preOrdem(NoBin *no) {
+    if (no) {
+        std::println("{}", no->chave);
+        preOrdem(no->esq);
+        preOrdem(no->dir);
+    }
+}
+
+// Ex 1g
+void emOrdem(NoBin *no) {
+    if (no) {
+        emOrdem(no->esq);
+        std::println("{}", no->chave);
+        emOrdem(no->dir);
+    }
+}
+
+// Ex 1h
+void posOrdem(NoBin *no) {
+    if (no) {
+        posOrdem(no->esq);
+        posOrdem(no->dir);
+        std::println("{}", no->chave);
+    }
+}
+
+// Criação da árvore
 void insere(ArvBin *arv, NoBin *&raiz, char c) {
     if (!raiz) {
         raiz = new NoBin{c, nullptr, nullptr};
@@ -137,14 +164,6 @@ void insere(ArvBin *arv, NoBin *&raiz, char c) {
     if (c <= raiz->chave)
         return insere(arv, raiz->esq, c);
     return insere(arv, raiz->dir, c);
-}
-
-void emOrdem(NoBin *no) {
-    if (no) {
-        emOrdem(no->esq);
-        std::println("{}", no->chave);
-        emOrdem(no->dir);
-    }
 }
 
 int main() {
