@@ -12,6 +12,7 @@ struct ArvBin {
 
     void cria();
     bool estritaBin(NoBin *no);
+    bool ehPerfeita(NoBin *no);
 };
 
 void ArvBin::cria() {
@@ -75,6 +76,34 @@ void emNiveis(NoBin *no) {
     }
 }
 
+// Ex 1c
+bool auxEhPerfeita(NoBin *no, int nivel_ref, int nivel_atual, bool check) {
+    if (!dois_ou_zero_filhos(no))
+        return false;
+    if (check && no->esq)
+        check *= auxEhPerfeita(no->esq, nivel_ref, nivel_atual + 1, check);
+    if (check && no->dir)
+        check *= auxEhPerfeita(no->dir, nivel_ref, nivel_atual + 1, check);
+    if (no->esq && no->dir)
+        return check;
+    return check * nivel_ref == nivel_atual;
+}
+
+bool ArvBin::ehPerfeita(NoBin *no) {
+    if (!no)
+        return true;
+    if (!dois_ou_zero_filhos(no))
+        return false;
+    NoBin *tmp = no;
+    int nivel = 1;
+    while (tmp->esq) {
+        nivel++;
+        tmp = tmp->esq;
+    }
+    return auxEhPerfeita(no, nivel, 1, true);
+}
+
+// Operações básicas
 void insere(ArvBin *arv, NoBin *&raiz, char c) {
     if (!raiz) {
         raiz = new NoBin{c, nullptr, nullptr};
@@ -130,6 +159,13 @@ int main() {
     // Ex 1b
     std::println("\nPercurso na arvore em-niveis:");
     emNiveis(arv.raiz);
+
+    // Ex 1c
+    // ehPerfeita
+    if (arv.ehPerfeita(arv.raiz))
+        std::println("\nA arvore é perfeita.");
+    else
+        std::println("\nA arvore não é perfeita.");
 
     return 0;
 }
