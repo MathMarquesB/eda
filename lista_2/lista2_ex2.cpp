@@ -12,7 +12,8 @@ struct Heap1 {
     void troca(int p, int pos, int v[]);
     int pai(int pos);
     void sobe(int pos);
-    constroi_sobe(int v2[], int N2);
+    void constroi_sobe(int v2[], int N2);
+    void imprimeSeq();
 };
 
 void Heap1::cria() {
@@ -23,17 +24,17 @@ int Heap1::frente() {
     return v[0];
 }
 
-int Heap1::troca(int p, int pos, int v[]) {
+void Heap1::troca(int p, int pos, int v[]) {
     int tmp = v[p];
     v[p] = v[pos];
-    v[pos] = v[tmp];
+    v[pos] = tmp;
 }
 
 int Heap1::pai(int pos) {
     return (pos - 1) / 2;
 }
 
-int Heap1::sobe(int pos) {
+void Heap1::sobe(int pos) {
     int p = pai(pos);
     while (pos) {
         if (v[pos] >= v[p])
@@ -42,28 +43,34 @@ int Heap1::sobe(int pos) {
         pos = p;
         p = pai(pos);
     }
+}
 
-    int Heap1::insere(int chave) {
-        v[N] = chave;
-        N++;
-        sobe(N - 1);
-    }
+void Heap1::insere(int chave) {
+    v[N] = chave;
+    N++;
+    sobe(N - 1);
 }
 
 void Heap1::constroi_sobe(int v2[], int N2) {
-    for (int i = 1; i < N2; i++)
+    for (int i = 0; i < N2; i++)
         v[i] = v2[i];
     N = N2;
-    for (int i = 1; i < N2; i++)
+    for (int i = 0; i < N2; i++)
         sobe(i);
 }
 
+void Heap1::imprimeSeq() {
+    for (int i = 0; i < N; i++)
+        std::println("{}", v[i]);
+}
+
 int main() {
-    int v2 = [ 20, 10, 15, 4, 7, 8, 3, 1, 2 ];
+    int v2[] = {20, 10, 15, 4, 7, 8, 3, 1, 2};
 
     Heap1 heap;
     heap.cria();
     heap.constroi_sobe(v2, 9);
+    heap.imprimeSeq();
 
     return 0;
 }
